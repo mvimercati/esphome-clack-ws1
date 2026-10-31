@@ -121,7 +121,7 @@ Pins, tank size, timezone and update intervals are substitutions at the top of `
 
 ## Build and flash
 
-No Python on the host: ESPHome runs in Docker with a pinned image. `.esphome/` belongs to root.
+No Python on the host: ESPHome runs in Docker with a pinned image.
 
 ```sh
 cd /mnt/dietpi_userdata/esphome-clack
