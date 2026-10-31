@@ -10,7 +10,7 @@ measures the salt level in the brine tank with an ultrasonic sensor, and reads a
 This project is based on [aver-ua/clack-ws1-meter](https://github.com/aver-ua/clack-ws1-meter) (itself a
 fork of [fonske/clack-reader](https://github.com/fonske/clack-reader)). The valve setup and the wiring
 below come from its README. The config here was ported to an ESP32-C3 with a BME280, Italian entity
-names and ESPHome 2026.x.
+names, a dual optocoupler instead of the relay modules, and ESPHome 2026.x.
 
 ## Set up Clack WS1 "RELAY 1 / RLY 1", "RELAY 2 / RLY 2"
 
@@ -53,25 +53,29 @@ Ultrasonic sensor HC-SR04 (to measure the salt level) connected to GPIO25 (trigg
 
 Board: ESP32-C3 DevKitM-1 (`esp32-c3-devkitm-1`, Arduino framework).
 
+Instead of the DC-DC modules and relay modules of the schematic above, the two Clack relay outputs go
+through a dual optocoupler module (12 V input side, 3.3 V output side), which also isolates the ESP from
+the valve.
+
 ```
-Clack WS1 ── relay 1 (meter pulse)   ── GPIO7 ─┐
-          └─ relay 2 (regeneration)  ── GPIO6 ─┤
-HC-SR04 (salt tank lid) trig GPIO2, echo GPIO3 ┼── ESP32-C3 ──WiFi── Home Assistant
-BME280 (box) I2C 0x76, SDA GPIO0, SCL GPIO1 ───┘
+Clack WS1 ── relay 1 (meter pulse)  ─┐  dual optocoupler  ┌─ GPIO7 ─┐
+          └─ relay 2 (regeneration) ─┴─  12 V -> 3.3 V  ──┴─ GPIO6 ─┤
+HC-SR04 (salt tank lid) trig GPIO2, echo GPIO3 ─────────────────────┼── ESP32-C3 ──WiFi── Home Assistant
+BME280 (box) I2C 0x76, SDA GPIO0, SCL GPIO1 ────────────────────────┘
 ```
 
 | GPIO | Connected to | Config |
 | --- | --- | --- |
-| GPIO7 | Clack relay 1, water meter pulse | `binary_sensor` *Watermeter pulse*, active low, no internal pull-up, 50 ms debounce |
-| GPIO6 | Clack relay 2, regeneration start | `binary_sensor` *Regeneration pulse*, active low, no internal pull-up, 50 ms debounce |
+| GPIO7 | Clack relay 1, water meter pulse (optocoupler channel 1) | `binary_sensor` *Watermeter pulse*, active low, no internal pull-up, 50 ms debounce |
+| GPIO6 | Clack relay 2, regeneration start (optocoupler channel 2) | `binary_sensor` *Regeneration pulse*, active low, no internal pull-up, 50 ms debounce |
 | GPIO2 | HC-SR04 trigger | `sensor` *Saltlevel cm* (ultrasonic) |
 | GPIO3 | HC-SR04 echo | same sensor |
 | GPIO0 | BME280 SDA | `i2c`, BME280 at address `0x76` |
 | GPIO1 | BME280 SCL | same bus |
 
-The relay inputs have no internal pull-up (`pullup: false`): the relay contact pulls the pin to GND, so the
-line must be held high by an external pull-up on the board. The HC-SR04 sits under the lid of the brine tank, `sensor_height` (20 cm) above the top of
-a `tank_height` (65 cm) tank. The BME280 measures temperature, pressure and humidity inside the box.
+The relay inputs have no internal pull-up (`pullup: false`): when a Clack relay closes, the optocoupler
+output pulls the pin to GND, and the pull-up to 3.3 V is on the optocoupler module. The HC-SR04 sits under
+the lid of the brine tank, `sensor_height` (20 cm) above the top of a `tank_height` (65 cm) tank. The BME280 measures temperature, pressure and humidity inside the box.
 
 All pins and sizes are substitutions at the top of `esp-clack.yaml`.
 
