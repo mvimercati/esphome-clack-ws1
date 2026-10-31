@@ -1,4 +1,4 @@
-# esp-clack
+# ESPHome Clack WS1 softener
 
 ESPHome firmware for a Clack WS1 water softener, with Home Assistant over the native ESPHome API (encrypted).
 
