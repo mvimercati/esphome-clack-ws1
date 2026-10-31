@@ -36,8 +36,7 @@ logger:
 
 ota:
   - platform: esphome
-    # The 2025.10 firmware only knows the password: keep it until that one is replaced
-    password: !secret ota_password
+    encryption: {}  # same key as the api
 
 wifi:
   ssid: !secret wifi_ssid
@@ -96,6 +95,11 @@ script:
 ###  On reboot or powerloss of the esp, set the time left, last regeneration time, and capacity counters
   - id: on_boot
     then:
+      # Water meter has not published yet at boot: publish the restored value first
+      - sensor.template.publish:
+          id: clack_watermeter
+          state: !lambda |-
+            return id(totalWaterUsage);
       - sensor.template.publish:
           id: clack_m3_left
           state: !lambda |-

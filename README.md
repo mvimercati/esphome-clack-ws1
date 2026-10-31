@@ -117,7 +117,7 @@ Pins, tank size, timezone and update intervals are substitutions at the top of `
 | Path | What |
 | --- | --- |
 | `esp-clack.yaml` | the device (node `esp-clack`, 192.168.1.39) |
-| `secrets.yaml` | WiFi, API key, OTA password (gitignored; template `secrets.example.yaml`) |
+| `secrets.yaml` | WiFi, API key, also used by OTA (gitignored; template `secrets.example.yaml`) |
 
 ## Build and flash
 
