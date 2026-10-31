@@ -1,0 +1,9 @@
+# Credentials (WiFi, API key, OTA password)
+/secrets.yaml
+
+# ESPHome build output and caches
+/.esphome/
+*.bin
+
+# Previous configs and secrets
+/backup/
