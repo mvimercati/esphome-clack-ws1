@@ -114,7 +114,6 @@ Pins, tank size, timezone and update intervals are substitutions at the top of `
 | --- | --- |
 | `esp-clack.yaml` | the device (node `esp-clack`, 192.168.1.39) |
 | `secrets.yaml` | WiFi, API key, OTA password (gitignored; template `secrets.example.yaml`) |
-| `backup/` | the 2025.10 config and secrets, for a rollback (gitignored) |
 
 ## Build and flash
 
@@ -128,20 +127,3 @@ sudo docker run --rm -v "$PWD":/config $ESPHOME_IMG compile esp-clack.yaml
 sudo docker run --rm --network host -v "$PWD":/config $ESPHOME_IMG upload esp-clack.yaml --device 192.168.1.39
 sudo docker run --rm --network host -v "$PWD":/config $ESPHOME_IMG logs   esp-clack.yaml --device 192.168.1.39
 ```
-
-The host's USB also carries an APC UPS (`051d:0002`): for a USB flash always pass the
-`/dev/serial/by-id/...` port explicitly, never auto-detect.
-
-## Upgrade from 2025.10 (done 2026-10-30)
-
-ESPHome 2026.1 removed the API password, so the device now uses an encryption key (`api_encryption_key`).
-
-1. OTA as above: the old firmware only accepted the OTA password, which is why `ota:` still has it.
-   Counters and settings survived the upgrade (`backup/ha-states-before-ota.txt` has the values before).
-2. Home Assistant loses the device and asks to reconfigure it (Settings → Devices → ESPHome →
-   Addolcitore): paste `api_encryption_key` from `secrets.yaml`. Entities and history stay the same.
-3. To do before ESPHome 2027.3 (which drops plaintext OTA): replace the OTA password with
-   `encryption: {}` (same key as the API) and OTA again.
-
-Rollback: `backup/esp-clack.2025.10.yaml` with `backup/secrets.2025.10.yaml` and an ESPHome image of that
-time (2025.10.3), then restore the password in Home Assistant.
