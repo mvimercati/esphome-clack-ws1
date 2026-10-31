@@ -106,7 +106,7 @@ All pins and sizes are substitutions at the top of `esp-clack.yaml`.
 
 Two Home Assistant actions fix the counters by hand:
 
-- `esphome.esp_clack_meterstand_clack` with `meter_value` (liters used) and `regenmeter_value` (unused);
+- `esphome.esp_clack_meterstand_clack` with `meter_value` (liters used);
 - `esphome.esp_clack_meterstand_clack_reg_date` with `meter_value`, the date of the last regeneration in
   the format of *Regenerated on* (`2026 Thu 29 Oct 02:00`).
 

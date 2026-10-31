@@ -54,7 +54,6 @@ api:
     - action: meterstand_clack
       variables:
         meter_value: float
-        regenmeter_value: float
       then:
         - globals.set:
             id: totalWaterUsage
@@ -156,7 +155,7 @@ text_sensor:
       time_t currTime = id(clack_sntp_time).now().timestamp;
       struct tm * tm_currTime = localtime(&currTime);
       int year = tm_currTime->tm_year+1900;
-      struct tm tm_reg_last;
+      struct tm tm_reg_last = {};
       if (strlen(id(regeneration_last).c_str())>16) 
        strptime(id(regeneration_last).c_str(),"%Y %a %d %b %H:%M",&tm_reg_last);
       else 
@@ -166,6 +165,7 @@ text_sensor:
         tm_reg_last.tm_mon=tm_currTime->tm_mon;
       } else { tm_reg_last.tm_mday += id(clack_capacity_days).state; }
       tm_reg_last.tm_sec = 0;
+      tm_reg_last.tm_isdst = -1;  // let mktime work out DST
       int time = mktime(&tm_reg_last) - currTime;
       if ( (id(clack_l_left).state<=0)&&(time<0) ) time += 86400;
       int days = time / 86400;
