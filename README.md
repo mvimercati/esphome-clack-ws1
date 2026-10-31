@@ -1,7 +1,6 @@
 # esp-clack
 
-ESPHome firmware for the **Addolcitore**, a Clack WS1 water softener, with Home Assistant over the
-native ESPHome API (encrypted).
+ESPHome firmware for a Clack WS1 water softener, with Home Assistant over the native ESPHome API (encrypted).
 
 An ESP32-C3 reads the two auxiliary relays of the Clack controller (water meter pulse and regeneration),
 measures the salt level in the brine tank with an ultrasonic sensor, and reads a BME280 inside the box.
